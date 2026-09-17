@@ -15,6 +15,7 @@ class InspectionItem {
   final Uint8List? imageBytes;
   final String? sampleImageTag;
   final String? pdfPath;
+  final String category;
 
   const InspectionItem({
     required this.id,
@@ -29,6 +30,7 @@ class InspectionItem {
     this.imageBytes,
     this.sampleImageTag,
     this.pdfPath,
+    this.category = 'Compliant Packages',
   });
 
   bool get isViolation => status == InspectionStatus.violation;
@@ -58,6 +60,14 @@ class InspectionItem {
       }
     }
 
+    final derivedCategory = report.statutoryCategory.isNotEmpty && report.statutoryCategory != 'Compliant Packages'
+        ? report.statutoryCategory
+        : InspectionReport.deriveCategory(
+            status: report.overallStatus,
+            checks: report.complianceChecks,
+            isWeightCompliant: report.isWeightCompliant,
+          );
+
     return InspectionItem(
       id: report.caseId,
       productName: report.productDetails.brandName,
@@ -71,6 +81,7 @@ class InspectionItem {
       imageBytes: report.imageBytes,
       sampleImageTag: report.sampleImageTag,
       pdfPath: report.pdfPath,
+      category: derivedCategory,
     );
   }
 }

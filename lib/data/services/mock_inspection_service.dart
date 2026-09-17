@@ -37,6 +37,7 @@ class MockInspectionService implements InspectionServiceInterface {
       overallStatus: InspectionStatus.pass,
       statusSummary: 'COMPLIANT / PASS',
       sampleImageTag: 'himalayan_salt',
+      statutoryCategory: 'Compliant Packages',
       productDetails: const ProductDetails(
         brandName: 'Puro Himalayan Pink Salt',
         declaredNetQuantity: '1 kg',
@@ -81,6 +82,7 @@ class MockInspectionService implements InspectionServiceInterface {
       overallStatus: InspectionStatus.violation,
       statusSummary: 'VIOLATION DETECTED',
       sampleImageTag: 'packaged_water',
+      statutoryCategory: 'MRP Violations (Rule 18)',
       productDetails: const ProductDetails(
         brandName: 'Aquasure Sparkling Water',
         declaredNetQuantity: '500 ml',
@@ -109,11 +111,54 @@ class MockInspectionService implements InspectionServiceInterface {
       ],
     );
 
+    final teaReport = InspectionReport(
+      caseId: 'LMD-2026-0909-012',
+      officerName: 'Inspector R. Sharma',
+      officerId: 'INSP-DL-4082',
+      timestamp: DateTime.now().subtract(const Duration(days: 2, hours: 1)),
+      businessName: 'Royal Tea Traders & Packaging Unit',
+      location: 'Industrial Area Phase I',
+      overallStatus: InspectionStatus.violation,
+      statusSummary: 'VIOLATION DETECTED',
+      statutoryCategory: 'Weight Shortage (Fifth Schedule)',
+      measuredNetWeight: 476.0,
+      weightVariancePercent: -4.8,
+      isWeightCompliant: false,
+      mpeLimit: 15.0,
+      productDetails: const ProductDetails(
+        brandName: 'Assam Gold Premium CTC Tea',
+        declaredNetQuantity: '500 g',
+        declaredMrp: '₹220.00',
+        unitSalePrice: '₹0.44 / g',
+        batchMfgDate: 'T-88 / 05/2026',
+        manufacturerAddress: 'Assam Gold Blenders Ltd, Guwahati',
+        consumerCareDetails: 'care@assamgold.in',
+      ),
+      complianceChecks: const [
+        ComplianceCheck(
+          title: 'Net Weight Deficiency',
+          isCompliant: false,
+          statusText: 'Shortage Detected',
+          flaggedDetail: 'Net weight 476.0g vs declared 500g (Deficiency -24.0g exceeds MPE of 15.0g)',
+          ruleReference: 'Fifth Schedule, Rule 11 & 24',
+          description: 'Net quantity deficiency exceeds Maximum Permissible Error (MPE) under Fifth Schedule.',
+        ),
+        ComplianceCheck(
+          title: 'Mandatory Declarations',
+          isCompliant: true,
+          statusText: 'Compliant',
+          ruleReference: 'Rule 6(1)',
+          description: 'Packer, brand, batch and dates properly specified.',
+        ),
+      ],
+    );
+
     _recentInspections.addAll([
       InspectionItem.fromReport(oilReport),
       InspectionItem.fromReport(attaReport),
       InspectionItem.fromReport(saltReport),
       InspectionItem.fromReport(waterReport),
+      InspectionItem.fromReport(teaReport),
     ]);
   }
 

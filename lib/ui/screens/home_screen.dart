@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../widgets/legal_metrology_logo.dart';
+import 'ar_viewfinder_screen.dart';
 import 'capture_screen.dart';
+import 'fifth_schedule_wizard_screen.dart';
 import 'login_screen.dart';
 import 'logs_screen.dart';
 import 'rules_screen.dart';
@@ -116,37 +119,45 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AppTheme.surfaceLight,
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: Row(
           children: [
-            const Text(
-              'Inspector R. Sharma',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+            const LegalMetrologyLogo(size: 34, isBadge: false),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Inspector R. Sharma',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        width: 7,
+                        height: 7,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF4ADE80),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      const Text(
+                        'Zone 1 • North District Enforcement',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFFCBD5E1),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            Row(
-              children: [
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF4ADE80),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 5),
-                const Text(
-                  'Zone 1 • North District Enforcement',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFFCBD5E1),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
@@ -198,18 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppTheme.borderLight),
       ),
-      child: Row(
+      child: const Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryNavy.withAlpha(20),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.balance_rounded, color: AppTheme.primaryNavy, size: 24),
-          ),
-          const SizedBox(width: 14),
-          const Expanded(
+          LegalMetrologyLogo(size: 46, isBadge: true, borderWidth: 1.5),
+          SizedBox(width: 14),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -419,28 +423,64 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Quick link cards to Case Logs and Statutory Rules
+  /// Quick link cards to Modules: Case Logs, Statutory Rules, AR Caliper, and Fifth Schedule Wizard
   Widget _buildQuickResourceLinks() {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: _buildResourceTile(
-            icon: Icons.assignment_rounded,
-            title: 'Case Logs',
-            subtitle: 'Officer uploads & memos',
-            accentColor: AppTheme.primaryBlue,
-            onTap: () => setState(() => _currentIndex = 1),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: _buildResourceTile(
+                icon: Icons.assignment_rounded,
+                title: 'Case Logs',
+                subtitle: 'Officer uploads & memos',
+                accentColor: AppTheme.primaryBlue,
+                onTap: () => setState(() => _currentIndex = 1),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildResourceTile(
+                icon: Icons.menu_book_rounded,
+                title: 'Rules & Act',
+                subtitle: 'PCR 2011 & Font Tables',
+                accentColor: AppTheme.accentGold,
+                onTap: () => setState(() => _currentIndex = 2),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildResourceTile(
-            icon: Icons.menu_book_rounded,
-            title: 'Rules & Act',
-            subtitle: 'PCR 2011 & Font Tables',
-            accentColor: AppTheme.accentGold,
-            onTap: () => setState(() => _currentIndex = 2),
-          ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _buildResourceTile(
+                icon: Icons.straighten_rounded,
+                title: 'AR Font Caliper',
+                subtitle: 'PDP & Rule 9(1) HUD',
+                accentColor: const Color(0xFF0284C7),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ArViewfinderScreen()),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildResourceTile(
+                icon: Icons.calculate_rounded,
+                title: 'Fifth Schedule',
+                subtitle: 'MPE Lot Weight Wizard',
+                accentColor: const Color(0xFF059669),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const FifthScheduleWizardScreen()),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ],
     );

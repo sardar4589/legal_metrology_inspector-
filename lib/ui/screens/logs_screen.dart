@@ -4,6 +4,7 @@ import '../../data/models/inspection_item.dart';
 import '../../data/models/inspection_report.dart';
 import '../../data/services/mock_inspection_service.dart';
 import '../widgets/inspection_card.dart';
+import '../widgets/sticky_forensic_footer.dart';
 import 'report_screen.dart';
 
 /// Screen: Inspection Logs & Case Audit Register
@@ -29,6 +30,7 @@ class _LogsScreenState extends State<LogsScreen> {
   List<InspectionItem> _filteredItems = [];
   bool _isLoading = true;
   String _selectedFilter = 'ALL'; // 'ALL', 'VIOLATIONS', 'COMPLIANT'
+  String _selectedCategory = 'ALL'; // 'ALL', 'FONT', 'WEIGHT', 'MRP', 'COMPLIANT'
 
   @override
   void initState() {
@@ -62,15 +64,24 @@ class _LogsScreenState extends State<LogsScreen> {
             item.productName.toLowerCase().contains(query) ||
             item.businessName.toLowerCase().contains(query) ||
             item.id.toLowerCase().contains(query) ||
+            item.category.toLowerCase().contains(query) ||
             (item.violationReason ?? '').toLowerCase().contains(query);
 
         if (!matchesQuery) return false;
 
-        if (_selectedFilter == 'VIOLATIONS') {
-          return item.isViolation;
-        } else if (_selectedFilter == 'COMPLIANT') {
-          return item.isPass;
+        // Status filter
+        if (_selectedFilter == 'VIOLATIONS' && !item.isViolation) return false;
+        if (_selectedFilter == 'COMPLIANT' && !item.isPass) return false;
+
+        // Category filter (User Requirement: Category-wise Logs)
+        if (_selectedCategory != 'ALL') {
+          final cat = item.category.toLowerCase();
+          if (_selectedCategory == 'FONT' && !cat.contains('font')) return false;
+          if (_selectedCategory == 'WEIGHT' && !cat.contains('weight')) return false;
+          if (_selectedCategory == 'MRP' && !cat.contains('mrp')) return false;
+          if (_selectedCategory == 'COMPLIANT' && !cat.contains('compliant')) return false;
         }
+
         return true;
       }).toList();
     });
@@ -144,6 +155,7 @@ class _LogsScreenState extends State<LogsScreen> {
                 const SnackBar(
                   content: Text('Audit Register exported and synced with State Enforcement Server.'),
                   behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
                 ),
               );
             },
@@ -234,7 +246,10 @@ class _LogsScreenState extends State<LogsScreen> {
                       GestureDetector(
                         onTap: () {
                           _searchController.clear();
-                          setState(() => _selectedFilter = 'ALL');
+                          setState(() {
+                            _selectedFilter = 'ALL';
+                            _selectedCategory = 'ALL';
+                          });
                           _applyFilters();
                         },
                         child: const Text(
@@ -272,6 +287,7 @@ class _LogsScreenState extends State<LogsScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: const StickyForensicFooter(),
     );
   }
 
@@ -281,7 +297,7 @@ class _LogsScreenState extends State<LogsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.borderLight),
+        border: Border.all(color: AppTheme.neutralBorder, width: 2.0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withAlpha(8),
@@ -348,14 +364,78 @@ class _LogsScreenState extends State<LogsScreen> {
   }
 
   Widget _buildFilterChips() {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildChip('ALL', 'All Cases (${_allItems.length})'),
-        const SizedBox(width: 8),
-        _buildChip('VIOLATIONS', 'Violations (${_allItems.where((i) => i.isViolation).length})', isViolation: true),
-        const SizedBox(width: 8),
-        _buildChip('COMPLIANT', 'Compliant (${_allItems.where((i) => i.isPass).length})', isCompliant: true),
+        // Status Row (All, Violations, Compliant)
+        Row(
+          children: [
+            _buildChip('ALL', 'All Cases (${_allItems.length})'),
+            const SizedBox(width: 8),
+            _buildChip('VIOLATIONS', 'Violations (${_allItems.where((i) => i.isViolation).length})', isViolation: true),
+            const SizedBox(width: 8),
+            _buildChip('COMPLIANT', 'Compliant (${_allItems.where((i) => i.isPass).length})', isCompliant: true),
+          ],
+        ),
+        const SizedBox(height: 10),
+
+        // Statutory Category Scrollable Strip (User Requirement: Category-wise Logs)
+        Row(
+          children: [
+            const Icon(Icons.filter_list_rounded, size: 14, color: AppTheme.textSecondary),
+            const SizedBox(width: 6),
+            const Text('Categories: ', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textSecondary)),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildCategoryPill('ALL', 'All Categories'),
+                    const SizedBox(width: 6),
+                    _buildCategoryPill('FONT', 'Font Violations'),
+                    const SizedBox(width: 6),
+                    _buildCategoryPill('WEIGHT', 'Weight Shortage'),
+                    const SizedBox(width: 6),
+                    _buildCategoryPill('MRP', 'MRP Tampering'),
+                    const SizedBox(width: 6),
+                    _buildCategoryPill('COMPLIANT', 'Compliant Packages'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
+    );
+  }
+
+  Widget _buildCategoryPill(String catKey, String label) {
+    final isSelected = _selectedCategory == catKey;
+    return InkWell(
+      key: ValueKey('cat_filter_$catKey'),
+      onTap: () {
+        setState(() => _selectedCategory = catKey);
+        _applyFilters();
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.primaryNavy : const Color(0xFFF1F5F9),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? AppTheme.primaryNavy : AppTheme.borderLight,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 10.5,
+            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+            color: isSelected ? Colors.white : AppTheme.textPrimary,
+          ),
+        ),
+      ),
     );
   }
 

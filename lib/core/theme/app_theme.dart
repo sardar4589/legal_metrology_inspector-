@@ -9,24 +9,34 @@ class AppTheme {
   static const Color primaryNavy = Color(0xFF0C2340);       // Deep Navy
   static const Color primaryBlue = Color(0xFF1B4980);       // Enforcement Blue
   static const Color accentGold = Color(0xFFC8963E);        // Department Emblem Gold
-  static const Color surfaceLight = Color(0xFFF6F8FA);      // Crisp background
+  static const Color surfaceLight = Color(0xFFF1F5F9);      // Neutral slate gray background
   static const Color cardBackground = Colors.white;
 
+  // 2px Solid Semantic Border Tokens
+  static const Color passBorder = Color(0xFF16A34A);
+  static const Color violationBorder = Color(0xFFDC2626);
+  static const Color neutralBorder = Color(0xFFCBD5E1);
+
   // Compliance Status Colors
-  static const Color violationRed = Color(0xFFD32F2F);
+  static const Color violationRed = Color(0xFFDC2626);
   static const Color violationBackground = Color(0xFFFFEBEE);
   static const Color violationText = Color(0xFFB71C1C);
 
-  static const Color passGreen = Color(0xFF2E7D32);
+  static const Color passGreen = Color(0xFF16A34A);
   static const Color passBackground = Color(0xFFE8F5E9);
-  static const Color passText = Color(0xFF1B5E20);
+  static const Color passText = Color(0xFF15803D);
 
-  static const Color warningAmber = Color(0xFFED6C02);
-  static const Color warningBackground = Color(0xFFFFF4E5);
+  static const Color warningAmber = Color(0xFFD97706);
+  static const Color warningBackground = Color(0xFFFFFBEB);
 
-  static const Color textPrimary = Color(0xFF1E293B);
-  static const Color textSecondary = Color(0xFF64748B);
-  static const Color borderLight = Color(0xFFE2E8F0);
+  // High-Glare Field Text Hierarchy
+  static const Color primaryInk = Color(0xFF0F172A);         // Titles >=18sp (weights 700-800)
+  static const Color secondaryText = Color(0xFF334155);      // Body (14sp)
+  static const Color metadataLabel = Color(0xFF64748B);      // Labels (11-12sp)
+
+  static const Color textPrimary = primaryInk;
+  static const Color textSecondary = secondaryText;
+  static const Color borderLight = neutralBorder;
 
   static ThemeData get lightTheme {
     final base = ThemeData(
@@ -61,7 +71,7 @@ class AppTheme {
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: borderLight, width: 1),
+          side: const BorderSide(color: borderLight, width: 2),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -69,13 +79,13 @@ class AppTheme {
           backgroundColor: primaryNavy,
           foregroundColor: Colors.white,
           elevation: 2,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
           textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontSize: 14.5,
+            fontWeight: FontWeight.w700,
             letterSpacing: 0.3,
           ),
         ),
@@ -83,14 +93,14 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: primaryNavy,
-          side: const BorderSide(color: primaryNavy, width: 1.5),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          side: const BorderSide(color: primaryNavy, width: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
           textStyle: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -152,6 +162,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           side: const BorderSide(color: borderLight),
         ),
+      ),
+      snackBarTheme: const SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }

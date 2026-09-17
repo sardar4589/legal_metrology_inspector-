@@ -5,7 +5,6 @@ import 'ui/screens/login_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
   // Set system UI overlay styling for official clean look
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(

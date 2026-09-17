@@ -28,9 +28,9 @@ class InspectionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
           color: item.isViolation
-              ? AppTheme.violationRed.withAlpha(60)
-              : AppTheme.borderLight,
-          width: 1.2,
+              ? AppTheme.violationBorder
+              : (item.isPass ? AppTheme.passBorder : AppTheme.neutralBorder),
+          width: 2.0,
         ),
       ),
       child: InkWell(
@@ -97,6 +97,24 @@ class InspectionCard extends StatelessWidget {
                               ),
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 5),
+                        // Statutory Category Badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryNavy.withAlpha(15),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: AppTheme.primaryNavy.withAlpha(30)),
+                          ),
+                          child: Text(
+                            item.category,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.primaryNavy,
+                            ),
+                          ),
                         ),
                       ],
                     ),

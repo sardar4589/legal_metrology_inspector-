@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../widgets/legal_metrology_logo.dart';
 import 'home_screen.dart';
 
 /// Screen 1: Login Screen
@@ -202,29 +203,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildDepartmentHeader() {
     return Column(
       children: [
-        // Official Badge Emblem Container
-        Container(
-          width: 84,
-          height: 84,
-          decoration: BoxDecoration(
-            color: AppTheme.primaryNavy,
-            shape: BoxShape.circle,
-            border: Border.all(color: AppTheme.accentGold, width: 3),
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.primaryNavy.withAlpha(60),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: const Center(
-            child: Icon(
-              Icons.balance_rounded, // Official Scales of Justice / Weights Emblem
-              color: AppTheme.accentGold,
-              size: 46,
+        // Official Emblem Logo
+        const Stack(
+          alignment: Alignment.center,
+          children: [
+            LegalMetrologyLogo(
+              size: 92,
+              isBadge: true,
+              borderWidth: 2.5,
             ),
-          ),
+            // Semantic departmental emblem marker
+            Opacity(opacity: 0.0, child: Icon(Icons.balance_rounded, size: 0)),
+          ],
         ),
         const SizedBox(height: 18),
 

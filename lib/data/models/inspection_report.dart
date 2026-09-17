@@ -24,6 +24,15 @@ class InspectionReport {
   final String? sampleImageTag;
   final String? pdfPath;
 
+  // Category-wise Classification (User Requirement)
+  final String statutoryCategory;
+
+  // Verified Weight Metrics (Manual or Bluetooth Scale)
+  final double? measuredNetWeight;
+  final double? weightVariancePercent;
+  final bool? isWeightCompliant;
+  final double? mpeLimit;
+
   const InspectionReport({
     required this.caseId,
     required this.officerName,
@@ -39,9 +48,43 @@ class InspectionReport {
     this.imageBytes,
     this.sampleImageTag,
     this.pdfPath,
+    this.statutoryCategory = 'Compliant Packages',
+    this.measuredNetWeight,
+    this.weightVariancePercent,
+    this.isWeightCompliant,
+    this.mpeLimit,
   });
 
   bool get isViolation => overallStatus == InspectionStatus.violation;
+
+  /// Automatically derives the statutory violation category based on findings
+  static String deriveCategory({
+    required InspectionStatus status,
+    required List<ComplianceCheck> checks,
+    bool? isWeightCompliant,
+  }) {
+    if (isWeightCompliant == false) {
+      return 'Weight Shortage (Fifth Schedule)';
+    }
+    if (status == InspectionStatus.violation) {
+      final flagged = checks.where((c) => !c.isCompliant).toList();
+      for (final c in flagged) {
+        final title = c.title.toLowerCase();
+        final ref = c.ruleReference.toLowerCase();
+        if (title.contains('font') || ref.contains('9(1)') || title.contains('caliper')) {
+          return 'Font Violations (Rule 9)';
+        }
+        if (title.contains('mrp') || title.contains('tamper') || ref.contains('18')) {
+          return 'MRP Violations (Rule 18)';
+        }
+        if (title.contains('weight') || title.contains('quantity') || ref.contains('fifth')) {
+          return 'Weight Shortage (Fifth Schedule)';
+        }
+      }
+      return 'Declarations Missing (Rule 6)';
+    }
+    return 'Compliant Packages';
+  }
 
   InspectionReport copyWith({
     String? caseId,
@@ -58,6 +101,11 @@ class InspectionReport {
     Uint8List? imageBytes,
     String? sampleImageTag,
     String? pdfPath,
+    String? statutoryCategory,
+    double? measuredNetWeight,
+    double? weightVariancePercent,
+    bool? isWeightCompliant,
+    double? mpeLimit,
   }) {
     return InspectionReport(
       caseId: caseId ?? this.caseId,
@@ -74,6 +122,11 @@ class InspectionReport {
       imageBytes: imageBytes ?? this.imageBytes,
       sampleImageTag: sampleImageTag ?? this.sampleImageTag,
       pdfPath: pdfPath ?? this.pdfPath,
+      statutoryCategory: statutoryCategory ?? this.statutoryCategory,
+      measuredNetWeight: measuredNetWeight ?? this.measuredNetWeight,
+      weightVariancePercent: weightVariancePercent ?? this.weightVariancePercent,
+      isWeightCompliant: isWeightCompliant ?? this.isWeightCompliant,
+      mpeLimit: mpeLimit ?? this.mpeLimit,
     );
   }
 
